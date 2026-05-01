@@ -1,0 +1,102 @@
+{
+  "network": "arbitrum-sepolia",
+  "chainId": 421614,
+  "deployer": "0x31f4a2E4b4dF8c46c466076cbf56fb1037899198",
+  "contracts": {
+    "MockERC20": {
+      "address": "0x155b9eee80e9f89f0594953bb9B9554d8b653a00",
+      "deployedAt": "2026-04-29T16:50:00Z",
+      "status": "active",
+      "notes": "Standard ERC-20 with public mint(). Test token."
+    },
+    "ConfPayToken": {
+      "address": "0x08A1ABF57C949Db12848bE205498f492e9b5BBa6",
+      "deployedAt": "2026-04-29T16:51:00Z",
+      "status": "active",
+      "notes": "ERC-7984 Wrapper. Wraps MockERC20 into confidential token."
+    },
+    "PayrollManager_v1": {
+      "address": "0x0fA9FF374d56d79a606D7dc55EdBe8689a9631D2",
+      "deployedAt": "2026-04-29T16:52:00Z",
+      "status": "DEPRECATED",
+      "deprecatedAt": "2026-04-30T04:31:00Z",
+      "deprecatedReason": "ARCH-CHANGE-001: batchPay called Nox.fromExternal internally, causing NotAllowed(bytes32,address) revert due to ACL mismatch in cross-contract handle flow."
+    },
+    "PayrollManager_v2": {
+      "address": "0x13A1cec5ecBae3aDfa92aE088811a40bA3f62985",
+      "deployedAt": "2026-04-30T04:31:00Z",
+      "status": "DEPRECATED",
+      "deprecatedAt": "2026-04-30T04:39:00Z",
+      "deprecatedReason": "Used confidentialTransferFrom external overload but proof validation still failed ('App mismatch' / 'Owner mismatch') due to msg.sender chain in Nox library calls."
+    },
+    "PayrollManager_v3": {
+      "address": "0xe3A2240060e1f52D84d8acE41dBb908aF53B3825",
+      "deployedAt": "2026-04-30T04:39:51Z",
+      "status": "active",
+      "notes": "Final architecture: bookkeeping + auditor registry only. Employer calls ConfPayToken.confidentialTransfer directly, then recordPayments here. Auditor ACL via employer's direct NoxCompute.allow calls."
+    }
+  },
+  "infrastructure": {
+    "NoxCompute": {
+      "address": "0xd464B198f06756a1d00be223634b85E0a731c229",
+      "source": "iExec-managed (hardcoded in Nox.sol for chain 421614)",
+      "notes": "Not deployed by us. Used for ACL allow/isAllowed and validateInputProof."
+    }
+  },
+  "demoConfig": {
+    "lockedAt": "2026-04-30T07:09Z",
+    "lockedBy": "0xjaadu Phase 5b pre-flight requirement #1",
+    "employees": 2,
+    "auditors": 1,
+    "metaMaskAccounts": {
+      "employer": {
+        "role": "Employer (deployer/owner)",
+        "address": "0x31f4a2E4b4dF8c46c466076cbf56fb1037899198",
+        "metaMaskIndex": "Account 1 (or whichever holds deployer key)",
+        "notes": "Must be contract owner. Must have ≥0.005 ETH + mUSDC."
+      },
+      "employee1": {
+        "role": "Employee A",
+        "address": "TO_BE_FILLED_BY_METAMASK",
+        "metaMaskIndex": "Account 2",
+        "salaryAmount": "500",
+        "salaryUnit": "mUSDC",
+        "notes": "Will receive 500 mUSDC in Scene 2. Performs unwrap in Scene 3."
+      },
+      "employee2": {
+        "role": "Employee B",
+        "address": "TO_BE_FILLED_BY_METAMASK",
+        "metaMaskIndex": "Account 3",
+        "salaryAmount": "300",
+        "salaryUnit": "mUSDC",
+        "notes": "Will receive 300 mUSDC in Scene 2. Not actively unwrapped in demo."
+      },
+      "auditor1": {
+        "role": "Auditor",
+        "address": "TO_BE_FILLED_BY_METAMASK",
+        "metaMaskIndex": "Account 4",
+        "notes": "Granted access in Scene 4. Decrypts both payment handles."
+      }
+    },
+    "wrapAmount": "1000",
+    "wrapUnit": "mUSDC",
+    "targetDuration": "3:40",
+    "maxDuration": "4:30",
+    "maxMetaMaskConfirmations": 11,
+    "scenes": [
+      { "scene": 1, "name": "Wrap", "txCount": 3, "txList": ["mint", "approve", "wrap"] },
+      { "scene": 2, "name": "Batch Pay", "txCount": 3, "txList": ["confidentialTransfer(emp1)", "confidentialTransfer(emp2)", "recordPayments"] },
+      { "scene": 3, "name": "Unwrap", "txCount": 2, "txList": ["unwrap", "finalizeUnwrap"], "publicDecryptWait": "10-15s" },
+      { "scene": 4, "name": "Audit", "txCount": 3, "txList": ["grantAuditorAccess", "NoxCompute.allow(handle1)", "NoxCompute.allow(handle2)"] }
+    ],
+    "preRecordChecklist": [
+      "Employer MetaMask account has ≥0.005 ETH",
+      "Employer has 0 mUSDC (will mint fresh in Scene 1)",
+      "Employee1 and Employee2 are NOT yet on payroll roster (addEmployee in Scene 2)",
+      "No auditors registered yet (grant in Scene 4)",
+      "Run throwaway unwrap 5-10min before recording to verify Gateway latency",
+      "Log PRE_RECORD_LATENCY to state/DECISIONS.md",
+      "Screen recorder set to 1080p, dark theme"
+    ]
+  }
+}

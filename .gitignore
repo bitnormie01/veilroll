@@ -52,15 +52,6 @@ Thumbs.db
 *.sw?
 *.local
 
-# ========================
-# Exclude non-code folders from repo
-# ========================
-docs/
-prompts/
-reports/
-state/
-submission/
-deployments/
 
 # ========================
 # Sensitive Scripts
