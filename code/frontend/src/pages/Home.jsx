@@ -1,41 +1,43 @@
+import { Link } from 'react-router-dom';
 import { EXPLORER_URL } from '../config/contracts';
 
 export default function Home() {
   return (
-    <div>
+    <div className="home-container">
       <div className="hero">
-        <div className="hero-badge">
-          🛡️ Built on iExec Nox Protocol · ERC-7984
+        <div className="badge">
+          <span className="badge-icon">🛡️</span>
+          Built on iExec Nox Protocol · ERC-7984
         </div>
-        <h2>
-          Confidential Payroll<br />
+        <h1 className="hero-title">
+          Confidential Payroll <br />
           <span className="highlight">Made Simple</span>
-        </h2>
-        <p>
+        </h1>
+        <p className="hero-subtitle">
           Pay your team with encrypted amounts. Only authorized parties can decrypt.
           Full privacy with selective auditor disclosure.
         </p>
-        <a href="/employer" className="btn btn-primary btn-lg">
+        <Link to="/employer" className="btn btn-primary btn-lg">
           Get Started →
-        </a>
+        </Link>
       </div>
 
       <div className="role-cards">
-        <a href="/employer" className="role-card">
+        <Link to="/employer" className="role-card">
           <div className="role-icon">🏢</div>
           <h3>Employer</h3>
           <p>Wrap tokens, manage employees, execute confidential batch payments</p>
-        </a>
-        <a href="/employee" className="role-card">
+        </Link>
+        <Link to="/employee" className="role-card">
           <div className="role-icon">👤</div>
           <h3>Employee</h3>
           <p>View encrypted balance, decrypt salary, unwrap to ERC-20</p>
-        </a>
-        <a href="/auditor" className="role-card">
+        </Link>
+        <Link to="/auditor" className="role-card">
           <div className="role-icon">🔍</div>
           <h3>Auditor</h3>
           <p>Review disclosed payment handles with read-only decrypt access</p>
-        </a>
+        </Link>
       </div>
 
       <div className="dashboard-grid" style={{ marginTop: '3rem' }}>
